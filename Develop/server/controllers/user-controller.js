@@ -11,7 +11,7 @@ module.exports = {
     });
 
     if (!foundUser) {
-      return res.status(400).json({ message: 'Cannot find a user with this id!' });
+      return res.status(400).json({ message: 'User not found' });
     }
 
     res.json(foundUser);
@@ -21,7 +21,7 @@ module.exports = {
     const user = await User.create(body);
 
     if (!user) {
-      return res.status(400).json({ message: 'Something is wrong!' });
+      return res.status(400).json({ message: 'Error!' });
     }
     const token = signToken(user);
     res.json({ token, user });
@@ -31,13 +31,13 @@ module.exports = {
   async login({ body }, res) {
     const user = await User.findOne({ $or: [{ username: body.username }, { email: body.email }] });
     if (!user) {
-      return res.status(400).json({ message: "Can't find this user" });
+      return res.status(400).json({ message: "User not found" });
     }
 
     const correctPw = await user.isCorrectPassword(body.password);
 
     if (!correctPw) {
-      return res.status(400).json({ message: 'Wrong password!' });
+      return res.status(400).json({ message: 'Incorrect password' });
     }
     const token = signToken(user);
     res.json({ token, user });
@@ -66,7 +66,7 @@ module.exports = {
       { new: true }
     );
     if (!updatedUser) {
-      return res.status(404).json({ message: "Couldn't find user with this id!" });
+      return res.status(404).json({ message: "No user with this id!" });
     }
     return res.json(updatedUser);
   },
